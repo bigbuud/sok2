@@ -5,6 +5,7 @@ import NumberBuildingExercise from '@/components/NumberBuildingExercise';
 import TimesTableExercise from '@/components/TimesTableExercise';
 import CijferenExercise from '@/components/CijferenExercise';
 import SplitsingenExercise from '@/components/SplitsingenExercise';
+import SplitsingenTot20Exercise from '@/components/SplitsingenTot20Exercise';
 import { ArrowLeft } from 'lucide-react';
 
 const ExercisePage = () => {
@@ -19,6 +20,7 @@ const ExercisePage = () => {
 
   const renderExercise = () => {
     if (config.type === 'splitsingen') return <SplitsingenExercise />;
+    if (config.type === 'splitsingen-tot-20') return <SplitsingenTot20Exercise />;
     if (config.type === 'number-building') return <NumberBuildingExercise />;
     if (config.type === 'vermenigvuldigen') return <TimesTableExercise initialMode="vermenigvuldigen" />;
     if (config.type === 'delen') return <TimesTableExercise initialMode="delen" />;

@@ -1,6 +1,7 @@
 export type ExerciseType =
   | 'number-building'
   | 'splitsingen'
+  | 'splitsingen-tot-20'
   | 'e-plus-e-brug'
   | 't-min-e-brug'
   | 'te-plus-e-brug'
@@ -29,6 +30,14 @@ export const exercises: ExerciseConfig[] = [
     emoji: '🍎',
     colorClass: 'text-fun-pink',
     bgClass: 'bg-fun-pink/10',
+  },
+  {
+    type: 'splitsingen-tot-20',
+    title: 'Splitsingen tot 20',
+    description: 'Splits getallen van 11 tot 20 in twee delen',
+    emoji: '🍊',
+    colorClass: 'text-fun-orange',
+    bgClass: 'bg-fun-orange/10',
   },
   {
     type: 'number-building',

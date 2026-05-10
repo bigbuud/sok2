@@ -256,7 +256,7 @@ function BadgesStrip() {
 
 const SECTIONS = [
   { label: '➕➖ Optellen & Aftrekken',
-    types: ['number-building','splitsingen','e-plus-e-brug','t-min-e-brug','te-plus-e-brug','te-min-e-brug','t-min-te','te-plus-te','te-min-te'] },
+    types: ['number-building','splitsingen','splitsingen-tot-20','e-plus-e-brug','t-min-e-brug','te-plus-e-brug','te-min-e-brug','t-min-te','te-plus-te','te-min-te'] },
   { label: '📐 Cijferen',
     types: ['cijferen'] },
   { label: '✖️➗ Vermenigvuldigen & Delen',
