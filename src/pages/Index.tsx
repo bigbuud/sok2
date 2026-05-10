@@ -27,7 +27,7 @@ function NewProfileDialog({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/40" onClick={onClose}>
+    <div className="fixed inset-0 flex items-center justify-center z-[100] bg-black/40" onClick={onClose}>
       <div className="bg-card rounded-3xl p-6 shadow-2xl max-w-xs w-full mx-4"
         onClick={e => e.stopPropagation()}>
         <h3 className="text-xl font-display text-foreground text-center mb-4">Nieuw profiel</h3>
