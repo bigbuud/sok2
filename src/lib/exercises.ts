@@ -1,5 +1,6 @@
 export type ExerciseType =
   | 'number-building'
+  | 'splitsingen'
   | 'e-plus-e-brug'
   | 't-min-e-brug'
   | 'te-plus-e-brug'
@@ -8,7 +9,8 @@ export type ExerciseType =
   | 'te-plus-te'
   | 'te-min-te'
   | 'vermenigvuldigen'
-  | 'delen';
+  | 'delen'
+  | 'cijferen';
 
 export interface ExerciseConfig {
   type: ExerciseType;
@@ -20,6 +22,14 @@ export interface ExerciseConfig {
 }
 
 export const exercises: ExerciseConfig[] = [
+  {
+    type: 'splitsingen',
+    title: 'Splitsingen',
+    description: 'Splits getallen van 1 tot 10 in twee delen',
+    emoji: '🍎',
+    colorClass: 'text-fun-pink',
+    bgClass: 'bg-fun-pink/10',
+  },
   {
     type: 'number-building',
     title: 'Getallen bouwen',
@@ -83,6 +93,14 @@ export const exercises: ExerciseConfig[] = [
     emoji: '🌟',
     colorClass: 'text-fun-green',
     bgClass: 'bg-fun-green/10',
+  },
+  {
+    type: 'cijferen',
+    title: 'Cijferen',
+    description: 'Optellen, aftrekken, × en staartdelen stap voor stap',
+    emoji: '📐',
+    colorClass: 'text-fun-blue',
+    bgClass: 'bg-fun-blue/10',
   },
   {
     type: 'vermenigvuldigen',
