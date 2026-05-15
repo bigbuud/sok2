@@ -1,9 +1,12 @@
 version: '3.8'
 
 services:
-  sok:
-    build: .
-    image: bigbuud/sok:latest
+  sok2:
+    image: ghcr.io/bigbuud/sok2:latest
     ports:
-      - "3000:80"
+      - "5505:3000"
+    volumes:
+      - /volume1/docker/sok2/data:/data
+    environment:
+      - STATE_FILE=/data/state.json
     restart: unless-stopped
