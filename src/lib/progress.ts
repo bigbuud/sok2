@@ -81,22 +81,53 @@ export async function initState(): Promise<void> {
     const res = await fetch('/api/state');
     if (!res.ok) return;
     const serverState: AppState | null = await res.json();
-    if (!serverState || !Array.isArray(serverState.profiles) || serverState.profiles.length === 0) return;
 
-    // Compare with local: keep the one with more total progress
     const localRaw = localStorage.getItem(STORAGE_KEY);
-    if (localRaw) {
-      const local: AppState = JSON.parse(localRaw);
-      const serverTotal = serverState.profiles.reduce((s, p) => s + p.totalCorrect, 0);
-      const localTotal  = local.profiles.reduce((s, p) => s + p.totalCorrect, 0);
-      if (serverTotal >= localTotal) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(serverState));
-      }
-    } else {
+    const localState: AppState | null = localRaw ? JSON.parse(localRaw) : null;
+
+    const serverHasData = serverState && Array.isArray(serverState.profiles) && serverState.profiles.length > 0;
+    const localHasData  = localState  && Array.isArray(localState.profiles)  && localState.profiles.length  > 0;
+
+    // Geval 1: server leeg, lokaal heeft data → push lokaal naar server
+    if (!serverHasData && localHasData) {
+      scheduleSyncToServer(localState!);
+      return;
+    }
+
+    // Geval 2: lokaal leeg, server heeft data → gebruik server
+    if (serverHasData && !localHasData) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(serverState));
+      return;
+    }
+
+    // Geval 3: beide hebben data → merge profielen
+    if (serverHasData && localHasData) {
+      const mergedProfiles: Profile[] = [...serverState!.profiles];
+
+      for (const localProfile of localState!.profiles) {
+        const idx = mergedProfiles.findIndex(p => p.id === localProfile.id);
+        if (idx >= 0) {
+          // Zelfde profiel: behoud het met de meeste voortgang
+          if (localProfile.totalCorrect > mergedProfiles[idx].totalCorrect) {
+            mergedProfiles[idx] = localProfile;
+          }
+        } else {
+          // Uniek lokaal profiel: voeg toe
+          mergedProfiles.push(localProfile);
+        }
+      }
+
+      const merged: AppState = {
+        activeProfileId: localState!.activeProfileId || serverState!.activeProfileId,
+        profiles: mergedProfiles,
+        hintsEnabled: localState!.hintsEnabled ?? serverState!.hintsEnabled,
+      };
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+      scheduleSyncToServer(merged); // Altijd terugschrijven naar server
     }
   } catch {
-    // No server (dev mode / offline) — fall back to localStorage only
+    // Offline / dev-modus — localStorage als fallback
   }
 }
 
