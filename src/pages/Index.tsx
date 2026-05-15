@@ -107,8 +107,52 @@ function SettingsModal({ onClose, onRefresh }: { onClose: () => void; onRefresh:
 
 // ─── Profile Drawer ─────────────────────────────────────────────────────────────
 
+// ─── Edit Name Dialog ──────────────────────────────────────────────────────────
+
+function EditNameDialog({ profile, onClose }: { profile: Profile; onClose: () => void }) {
+  const [name, setName] = useState(profile.name);
+
+  const handleSave = () => {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    updateActiveProfile(p => { p.name = trimmed; });
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center z-[100] bg-black/40" onClick={onClose}>
+      <div className="bg-card rounded-3xl p-6 shadow-2xl max-w-xs w-full mx-4"
+        onClick={e => e.stopPropagation()}>
+        <h3 className="text-xl font-display text-foreground text-center mb-4">Naam aanpassen</h3>
+        <input
+          type="text"
+          value={name}
+          onChange={e => setName(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && handleSave()}
+          maxLength={20}
+          className="w-full rounded-xl border border-border bg-background px-4 py-2 font-body text-foreground text-base mb-4 focus:outline-none focus:ring-2 focus:ring-primary"
+          autoFocus
+        />
+        <div className="flex gap-2">
+          <button onClick={onClose}
+            className="flex-1 py-2 rounded-xl font-body text-muted-foreground bg-muted hover:bg-muted/70 transition-all">
+            Annuleer
+          </button>
+          <button onClick={handleSave} disabled={!name.trim()}
+            className="flex-1 py-2 rounded-xl font-bold font-body bg-primary text-primary-foreground disabled:opacity-40 transition-all">
+            Opslaan ✅
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Profile Drawer ─────────────────────────────────────────────────────────────
+
 function ProfileDrawer({ onClose, onRefresh }: { onClose: () => void; onRefresh: () => void }) {
   const [showNew, setShowNew] = useState(false);
+  const [editingProfile, setEditingProfile] = useState<Profile | null>(null);
   const state = loadState();
 
   const handleSelect = (id: string) => {
@@ -126,9 +170,21 @@ function ProfileDrawer({ onClose, onRefresh }: { onClose: () => void; onRefresh:
     }
   };
 
+  const handleEdit = (e: React.MouseEvent, p: Profile) => {
+    e.stopPropagation();
+    switchProfile(p.id);
+    setEditingProfile(p);
+  };
+
   return (
     <>
       {showNew && <NewProfileDialog onClose={() => { setShowNew(false); onRefresh(); }} />}
+      {editingProfile && (
+        <EditNameDialog
+          profile={editingProfile}
+          onClose={() => { setEditingProfile(null); onRefresh(); }}
+        />
+      )}
       <div className="fixed inset-0 flex items-end justify-center z-50 bg-black/40" onClick={onClose}>
         <div className="bg-card rounded-t-3xl p-6 shadow-2xl w-full max-w-lg"
           onClick={e => e.stopPropagation()}>
@@ -145,10 +201,20 @@ function ProfileDrawer({ onClose, onRefresh }: { onClose: () => void; onRefresh:
                 <span className={`text-xs font-bold font-body truncate max-w-[64px] text-center ${
                   p.id === state.activeProfileId ? 'text-primary' : 'text-foreground'}`}>{p.name}</span>
                 <span className="text-xs text-muted-foreground font-body">{p.totalCorrect} ⭐</span>
-                {p.id === state.activeProfileId && (
+
+                {/* Naam bewerken */}
+                <button
+                  onClick={e => handleEdit(e, p)}
+                  className="absolute -top-1 -left-1 w-5 h-5 rounded-full bg-primary/80 text-white text-xs flex items-center justify-center hover:bg-primary"
+                  title="Naam aanpassen"
+                >✏️</button>
+
+                {/* Wissen (enkel als er meer dan 1 profiel is) */}
+                {state.profiles.length > 1 && (
                   <button
                     onClick={e => { e.stopPropagation(); handleDelete(p.id); }}
                     className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-destructive/80 text-white text-xs flex items-center justify-center hover:bg-destructive"
+                    title="Profiel verwijderen"
                   >✕</button>
                 )}
               </div>
