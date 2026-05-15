@@ -17,7 +17,30 @@ export default defineConfig(({ mode }) => ({
       registerType: "autoUpdate",
       includeAssets: ["placeholder.svg", "robots.txt"],
       workbox: {
-        navigateFallbackDenylist: [/^\/~oauth/],
+        skipWaiting: true,
+        clientsClaim: true,
+        navigateFallbackDenylist: [/^\/~oauth/, /^\/api/],
+        runtimeCaching: [
+          {
+            // HTML-pagina's: altijd van netwerk (NetworkFirst)
+            urlPattern: ({ request }) => request.mode === "navigate",
+            handler: "NetworkFirst",
+            options: {
+              networkTimeoutSeconds: 5,
+              cacheName: "pages-cache",
+            },
+          },
+          {
+            // JS/CSS/assets: netwerk eerst, fallback naar cache
+            urlPattern: ({ request }) =>
+              ["script", "style", "image", "font"].includes(request.destination),
+            handler: "NetworkFirst",
+            options: {
+              networkTimeoutSeconds: 5,
+              cacheName: "assets-cache",
+            },
+          },
+        ],
       },
       manifest: {
         name: "Rekenmeester",
